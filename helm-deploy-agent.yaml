@@ -4,5 +4,5 @@ helm upgrade --install k8s-agent gitlab/gitlab-agent \
     --namespace gitlab-agent \
     --create-namespace \
     --set image.tag=v15.4.0 \
-    --set config.token=wTdJE8wnBePG-aRS1azoDCb1WpNMMMwmywN4FosmjADV_yzx2w \
+    --set config.token=<Token-xxxxxxxxxxxxxxx> \
     --set config.kasAddress=wss://kas.gitlab.com
