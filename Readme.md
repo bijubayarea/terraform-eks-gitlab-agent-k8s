@@ -10,6 +10,25 @@ Pull-based GitOps : Why ?
 
 The [GitLab Agent for Kubernetes (`agentk`)](https://gitlab.com/gitlab-org/cluster-integration/gitlab-agent) is an active in-cluster component for solving GitLab and Kubernetes integration tasks in a secure and cloud-native way. The `agentk` communicates to the GitLab Agent Server (KAS) to perform GitOps operations.
 
+## Push-based Gitops : NOT RECOMMENDED in Production systems
+
+![](https://github.com/bijubayarea/terraform-eks-gitlab-agent-k8s/blob/main/images/gitops-push.png)
+
+  Push-based approach: A CI/CD tool pushes the changes to the environment. Applying GitOps via push is consistent with the approach used for application deployment. In this case, deployment targets for a push-based approach are not limited to Kubernetes.
+
+*   configure GitLab CI/CD to use the Kubernetes API to query and update your cluster
+
+*   K8s credentials exposed in GitLab
+
+*   This workflow has a weaker security model and is not recommended for production deployments.
+
+- Use this push-based workflow:
+  ```
+  - When you have a heavily pipeline-oriented processes.
+  - When you need to migrate to the agent but the GitOps workflow cannot support the use case you need.
+  ```
+
+
 Problem to Solve[](https://about.gitlab.com/blog/2021/09/10/setting-up-the-k-agent/#Problem-to-Solve)
 ----------------------------------------------------------------------------------------------------
 Currently the Kubernetes integration for Gitlab, both on premise installations and Gitlab.com, work by having the Gitlab installation and the Gitlab runners connect directly to the Kubernetes cluster you wish to manage via Gitlab, using credentials we store inside the Gitlab installation (in the database).
@@ -31,14 +50,22 @@ Why pull-based Gtops[](https://about.gitlab.com/blog/2021/09/10/setting-up-the-k
 *   Integrate a cluster, located behind a firewall or NAT, with GitLab
     Gitlab agent residing inside k8s cluster initiates any changes from inside the cluster. This is more secure.
 
-
 *   Kubernetes cluster-admin level credentials not exposed to CI/CD Gitlab.com
 
 *   GitLab pull-based Gitops allows granular access to Gitlab.com CD. Gitlab agent service account provided
     granular access to k8s namespaces to alow operations only for those namespace.
 
+*   Kubernetes manifests reside in GitLab
 
-## High-level architecture
+*   GitLab agent installed in k8s cluster
+
+*   Any update to k8s manifests in GitLab, the k8s-agent pulls and updates the k8s cluster 
+
+*   This workflow is fully driven with Git and is considered pull-based, because the cluster is pulling updates from your GitLab repository.
+
+
+
+## High-level architecture : Pull-based Gitops
 
 The GitLab Agent and the GitLab Agent Server use
 [bidirectional streaming](https://grpc.io/docs/what-is-grpc/core-concepts/#bidirectional-streaming-rpc)
